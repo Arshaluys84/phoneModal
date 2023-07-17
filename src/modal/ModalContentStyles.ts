@@ -34,6 +34,9 @@ export const modalContentStyles = {
         borderColor: "#5870E0",
         backgroundColor: "#5870E0",
         color: "#fff",
-        borderRadius: "6px"
+        borderRadius: "6px",
+        ":hover" :{
+            backgroundColor: "#4d599d",
+        }
     }
 }

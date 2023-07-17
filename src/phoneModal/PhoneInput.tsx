@@ -9,7 +9,7 @@ import { TextField } from '@mui/material';
 import { phoneInputStyles } from './PhoneInputStyles';
 
 export const PhoneInput = ({ handlePhoneNumber }: { handlePhoneNumber: (phone: string) => void }): JSX.Element => {
-    const [phone, setPhone] = useState('');
+    const [phone, setPhone] = useState<string>('');
 
     const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputPhone = event.target.value;
@@ -35,3 +35,4 @@ export const PhoneInput = ({ handlePhoneNumber }: { handlePhoneNumber: (phone: s
 };
 
 
+  

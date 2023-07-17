@@ -18,7 +18,7 @@ export const phoneSearchStyles = {
         fontWeight: "400"
     },
 
-    label: {
+    countryLabel: {
         display: 'inline',
         marginLeft: "10px"
     },

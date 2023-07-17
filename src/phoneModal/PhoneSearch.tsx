@@ -1,7 +1,6 @@
+import { useState, useEffect, useMemo } from "react";
 
-import { useState, useMemo } from "react";
-
-import { countries, CountryType, initialFlag, initialPhoneNumber } from "../utils/constants";
+import { initialFlag } from "../utils/constants";
 import { containsText } from "../utils/utils";
 
 import {
@@ -18,38 +17,50 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 
 import { phoneSearchStyles } from "./PhoneSearchStyles";
+import { Country } from "../hooks/useFetch";
 
-export const  PhoneSearch = ({ handleCountryCode }: { handleCountryCode: (code: string) => void }) => {
 
-    const [selectedOption, setSelectedOption] = useState(initialPhoneNumber.code);
-    const [selectedFlag, setSelectedFlag] = useState(initialFlag);
-    const [searchText, setSearchText] = useState("");
+export const PhoneSearch = ({ handleCountryCode, countries }: { handleCountryCode: (code: string) => void; countries: Country[] }) => {
 
-    const displayedOptions: CountryType[] = useMemo(
+    const initialState = "Poland"
+    const [selectedCountry, setSelectedCountry] = useState<string>("");
+    const [selectedFlag, setSelectedFlag] = useState<{code: string}>(initialFlag);
+    const [searchText, setSearchText] = useState<string>("");
+
+    const displayedOptions: Country[] = useMemo(
         () => countries.filter((option) => containsText(option.label, searchText)),
-        [searchText]
+        [searchText, countries]
     );
 
-    const { search, list, label, searchinput, select, menuProps, renderProps, adorment } = phoneSearchStyles
+    const { search, list, countryLabel, searchinput, select, menuProps, renderProps, adorment } = phoneSearchStyles
 
     const handleOnChange = (event: SelectChangeEvent<string>) => {
 
-        const country = countries.find(c => c.label === event.target.value)
+        const country = countries?.find(c => c.label === event.target.value)
         if (country) {
-            setSelectedOption(country.phone)
+            setSelectedCountry(country.label)
             setSelectedFlag(country)
             handleCountryCode(country.phone)
         }
     }
+    useEffect(() => {
+        const matchedOption = countries.find(({ label }) => label === initialState);
+        if (matchedOption) {
+            setSelectedCountry(matchedOption.label);
+        } else if (countries.length > 0) {
+            setSelectedCountry(countries[0].label);
+        }
+    }, [countries]);
+
     return (
-        <Box sx={ searchinput }>
+        <Box sx={searchinput}>
             <FormControl fullWidth>
                 <Select
-                    sx={ select }
+                    sx={select}
                     MenuProps={menuProps as Partial<MenuProps>}
                     labelId="search-select-label"
                     id="search-select"
-                    value={selectedOption}
+                    value={selectedCountry}
                     label=""
                     onChange={handleOnChange}
                     onClose={() => setSearchText("")}
@@ -61,8 +72,9 @@ export const  PhoneSearch = ({ handleCountryCode }: { handleCountryCode: (code: 
                             srcSet={`https://flagcdn.com/w40/${selectedFlag.code.toLowerCase()}.png 2x`}
                             alt=""
                         />
-                        {" +"}{selectedOption}
-                    </Box>}
+                        {countries?.filter(country => country.label === selectedCountry)[0]?.phone}
+                    </Box>
+                    }
                 >
                     <ListSubheader sx={search}>
                         <TextField
@@ -86,23 +98,27 @@ export const  PhoneSearch = ({ handleCountryCode }: { handleCountryCode: (code: 
                             }}
                         />
                     </ListSubheader>
-                    {displayedOptions.map((option, i) => (
-                        <MenuItem key={i} value={option.label}>
+                    {displayedOptions ? displayedOptions.map(({ label, phone, code }) => (
+                        <MenuItem key={code} value={label}>
                             <Box sx={list}>
                                 <Box>
                                     <img
                                         loading="lazy"
                                         width="20"
-                                        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                                        srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                                        src={`https://flagcdn.com/w20/${code.toLowerCase()}.png`}
+                                        srcSet={`https://flagcdn.com/w40/${code.toLowerCase()}.png 2x`}
                                         alt=""
                                     />
-                                    <Box component="div" sx={ label }>{option.label}</Box>
+                                    <Box component="span" title={label} sx={countryLabel}>{label.length > 15 
+                                    ? label.slice(0,15) + "..."
+                                    : label }</Box>
                                 </Box>
-                                <span>+{option.phone}</span>
+                                <span title={phone}>{phone.length > 5 
+                                ? phone.slice(0,5)
+                                : phone}</span>
                             </Box>
                         </MenuItem>
-                    ))}
+                    )) : <MenuItem>Loading...</MenuItem>}
                 </Select>
             </FormControl>
         </Box>
