@@ -46,7 +46,7 @@ export const ModalContent = ({ toggle }: { toggle: () => void }): JSX.Element =>
         </Box>
         <Box sx={buttons} >
             <Button variant="outlined" sx={cancel} onClick={handleCancel}>Cancel</Button>
-            <Button variant="outlined" sx={submit} type="submit">Submit</Button>
+            <Button variant="outlined" sx={submit} type="submit">Save</Button>
         </Box>
     </form>
 }
