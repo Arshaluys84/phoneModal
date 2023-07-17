@@ -21,7 +21,7 @@ export function useFetch(): Country[] | null {
           phone:Object.values(country.idd).join("").replace(/[^\d+]/g, '')
         }));
 
-        setCountryList(countries);
+        setCountryList(countries.sort((a,b) => a.label.localeCompare(b.label)));
       } catch (error) {
         console.error('Error fetching country data:', error);
         setCountryList([]);
